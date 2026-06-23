@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TAMZ — Gate Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Syne:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f5f0;
+      --surf: #ffffff;
+      --surf2: #f0ede6;
+      --ink: #181614;
+      --ink2: #3a3530;
+      --muted: #7a736a;
+      --faint: #b5ada3;
+      --bd: #e2ddd6;
+      --acc: #c17b3a;
+      --acc-dim: rgba(193,123,58,0.10);
+      --acc-glow: rgba(193,123,58,0.18);
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Syne', system-ui, sans-serif;
+      --r: 10px;
+      --tr: 0.2s ease;
+    }
+
+    .dark {
+      --bg: #111009;
+      --surf: #1a1814;
+      --surf2: #211e18;
+      --ink: #f0ebe3;
+      --ink2: #c8c0b4;
+      --muted: #887e72;
+      --faint: #5a5248;
+      --bd: #2e2a24;
+      --acc: #d4913f;
+      --acc-dim: rgba(212,145,63,0.10);
+      --acc-glow: rgba(212,145,63,0.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      transition: background var(--tr), color var(--tr);
+      min-height: 100vh;
+    }
+
+    ::selection { background: var(--acc); color: #fff; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 4px; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--bd);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 24px;
+      backdrop-filter: blur(8px);
+      transition: background var(--tr), border-color var(--tr);
+    }
+
+    .logo {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      user-select: none;
+    }
+    .logo em { font-style: italic; color: var(--acc); }
+
+    .topbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .kbd-hint {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      padding: 6px 13px;
+      border: 1px solid var(--bd);
+      border-radius: 7px;
+      background: var(--surf);
+      transition: all var(--tr);
+      user-select: none;
+    }
+    .kbd-hint:hover { border-color: var(--acc); color: var(--acc); background: var(--acc-dim); }
+    .kbd-hint kbd {
+      font-family: var(--sans);
+      font-size: 11px;
+      color: var(--faint);
+      padding: 1px 5px;
+      border: 1px solid var(--bd);
+      border-radius: 4px;
+      background: var(--surf2);
+      transition: border-color var(--tr), background var(--tr);
+    }
+
+    .theme-btn {
+      width: 32px; height: 32px;
+      border-radius: 7px;
+      border: 1px solid var(--bd);
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      transition: all var(--tr);
+      flex-shrink: 0;
+    }
+    .theme-btn:hover { border-color: var(--acc); color: var(--acc); background: var(--acc-dim); }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 44px 24px 20px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.05s forwards;
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(36px, 5.5vw, 54px);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--ink);
+    }
+    .hero-title em { font-style: italic; color: var(--acc); }
+    .hero-sub {
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── MAIN ── */
+    .main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 16px 24px 80px;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 36px; }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--acc);
+      margin-bottom: 14px;
+    }
+    .section-head::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--bd);
+    }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 14px 16px 13px;
+      border: 1px solid var(--bd);
+      border-radius: var(--r);
+      background: var(--surf);
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: border-color var(--tr), transform var(--tr), box-shadow var(--tr), background var(--tr);
+      opacity: 0;
+      animation: fadeUp 0.5s ease both;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--acc-dim);
+      opacity: 0;
+      transition: opacity var(--tr);
+    }
+    .card:hover::before { opacity: 1; }
+    .card:hover {
+      border-color: var(--acc);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px var(--acc-glow);
+    }
+    .card:focus-visible {
+      outline: 2px solid var(--acc);
+      outline-offset: 2px;
+    }
+
+    .card-label {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--ink);
+      position: relative;
+      line-height: 1.4;
+    }
+    .card-url {
+      font-size: 11px;
+      color: var(--faint);
+      position: relative;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-arrow {
+      position: absolute;
+      top: 11px;
+      right: 12px;
+      font-size: 12px;
+      color: var(--acc);
+      opacity: 0;
+      transform: translate(-2px, 2px);
+      transition: opacity var(--tr), transform var(--tr);
+    }
+    .card:hover .card-arrow {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    /* no-results */
+    .no-results {
+      padding: 40px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .no-results strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--acc);
+      margin-bottom: 6px;
+    }
+
+    /* ── PALETTE OVERLAY ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.42);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 80px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+    .overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .palette {
+      width: min(560px, 92vw);
+      background: var(--surf);
+      border: 1px solid var(--bd);
+      border-radius: 14px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22);
+      overflow: hidden;
+      transform: translateY(-10px) scale(0.98);
+      transition: transform 0.15s ease;
+    }
+    .overlay.open .palette {
+      transform: translateY(0) scale(1);
+    }
+
+    .palette-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--bd);
+    }
+    .palette-search-icon { flex-shrink: 0; color: var(--faint); }
+
+    .palette-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--ink);
+      caret-color: var(--acc);
+    }
+    .palette-input::placeholder { color: var(--faint); }
+
+    .p-results { max-height: 360px; overflow-y: auto; }
+
+    .p-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      cursor: pointer;
+      transition: background var(--tr);
+      text-decoration: none;
+      border-bottom: 1px solid var(--bd);
+    }
+    .p-item:last-child { border-bottom: none; }
+    .p-item:hover { background: var(--surf2); }
+    .p-item.active { background: var(--acc-dim); }
+
+    .p-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--acc);
+      flex-shrink: 0;
+      opacity: 0.4;
+      transition: opacity var(--tr);
+    }
+    .p-item.active .p-dot { opacity: 1; }
+
+    .p-name { font-size: 13px; font-weight: 500; color: var(--ink); flex: 1; min-width: 0; }
+    .p-cat  { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+    .p-empty {
+      padding: 36px 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .p-footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--bd);
+      display: flex;
+      gap: 16px;
+    }
+    .p-footer span {
+      font-size: 11px;
+      color: var(--faint);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .p-footer kbd {
+      font-family: var(--sans);
+      font-size: 10px;
+      padding: 1px 5px;
+      border: 1px solid var(--bd);
+      border-radius: 3px;
+      background: var(--surf2);
+      color: var(--muted);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card, .hero { animation: none; opacity: 1; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 540px) {
+      .main, .hero { padding-left: 16px; padding-right: 16px; }
+      .topbar { padding: 10px 16px; }
+      .grid { grid-template-columns: 1fr 1fr; }
+      .kbd-hint .hint-text { display: none; }
+    }
+    @media (max-width: 360px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <span class="logo">TAMZ <em>Hub</em></span>
+    <div class="topbar-right">
+      <button class="kbd-hint" id="openPalette" aria-label="Open command palette (Ctrl+K)">
+        <span class="hint-text">Quick launch</span>
+        <kbd>⌘K</kbd>
+      </button>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">🌙</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1 class="hero-title">DSA <em>Links</em> Hub</h1>
+    <p class="hero-sub">All resources, one place — press ⌘K to search</p>
+  </div>
+
+  <!-- MAIN GRID -->
+  <main class="main" id="main"></main>
+
+  <!-- COMMAND PALETTE -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Command palette">
+    <div class="palette">
+      <div class="palette-input-row">
+        <svg class="palette-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          class="palette-input"
+          id="palInput"
+          placeholder="Search links…"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Search links"
+        />
+      </div>
+      <div class="p-results" id="pResults" role="listbox"></div>
+      <div class="p-footer" aria-hidden="true">
+        <span><kbd>↑↓</kbd> navigate</span>
+        <span><kbd>↵</kbd> open</span>
+        <span><kbd>Esc</kbd> close</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ── DATA ── */
+    const LINKS = [
+      /* Main Resources */
+      { s: "DSA",    l: "DSA-HUB",                      u: "https://dsatamz.vercel.app/" },
+      { s: "DSA",    l: "DSA CHEATSHEET",             u: "https://tahathedsa.vercel.app/" },
+      { s: "DSA",    l: "DSA_DASHBOARD",         u: "https://tahadsa.vercel.app/" },
+      { s: "DSA",    l: "DSA_BASICS",                          u: "https://tahadsabasic.vercel.app/" },
+      { s: "DSA",    l: "TCS DSA",                     u: "https://tahatcsdsa.vercel.app/" },
+      ];
+
+    /* ── BUILD GRID ── */
+    const main = document.getElementById('main');
+    const sections = [...new Set(LINKS.map(l => l.s))];
+    let globalCardIdx = 0;
+
+    sections.forEach((sec, si) => {
+      const items = LINKS.filter(l => l.s === sec);
+      const secEl = document.createElement('div');
+      secEl.className = 'section';
+      secEl.dataset.section = sec;
+
+      const head = document.createElement('div');
+      head.className = 'section-head';
+      head.textContent = sec;
+      secEl.appendChild(head);
+
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+
+      items.forEach((item) => {
+        const a = document.createElement('a');
+        a.className = 'card';
+        a.href = item.u;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.dataset.label = item.l.toLowerCase();
+        a.dataset.sec   = item.s.toLowerCase();
+        a.style.animationDelay = (0.08 + globalCardIdx * 0.03) + 's';
+        globalCardIdx++;
+
+        const host = item.u.replace(/^https?:\/\//, '').split('/')[0];
+        a.innerHTML = `
+          <span class="card-label">${item.l}</span>
+          <span class="card-url">${host}</span>
+          <span class="card-arrow" aria-hidden="true">↗</span>
+        `;
+        grid.appendChild(a);
+      });
+
+      secEl.appendChild(grid);
+      main.appendChild(secEl);
+    });
+
+    /* ── THEME ── */
+    const themeBtn = document.getElementById('themeBtn');
+    let dark = localStorage.getItem('tamz-theme') === 'dark' ||
+      (!localStorage.getItem('tamz-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+
+    function applyTheme() {
+      document.body.classList.toggle('dark', dark);
+      themeBtn.textContent = dark ? '☀️' : '🌙';
+      localStorage.setItem('tamz-theme', dark ? 'dark' : 'light');
+    }
+    applyTheme();
+    themeBtn.addEventListener('click', () => { dark = !dark; applyTheme(); });
+
+    /* ── COMMAND PALETTE ── */
+    const overlay  = document.getElementById('overlay');
+    const palInput = document.getElementById('palInput');
+    const pResults = document.getElementById('pResults');
+    let pActiveIdx = 0;
+    let palOpen = false;
+
+    function openPalette() {
+      palOpen = true;
+      overlay.classList.add('open');
+      palInput.value = '';
+      renderPalette('');
+      requestAnimationFrame(() => palInput.focus());
+    }
+
+    function closePalette() {
+      palOpen = false;
+      overlay.classList.remove('open');
+      pActiveIdx = 0;
+    }
+
+    function renderPalette(q) {
+      const results = q
+        ? LINKS.filter(l =>
+            l.l.toLowerCase().includes(q) ||
+            l.s.toLowerCase().includes(q) ||
+            l.u.toLowerCase().includes(q)
+          )
+        : LINKS.slice(0, 14);
+
+      if (!results.length) {
+        pResults.innerHTML = `<div class="p-empty">No results for "<strong>${q}</strong>"</div>`;
+        pActiveIdx = -1;
+        return;
+      }
+
+      pActiveIdx = 0;
+      pResults.innerHTML = results.map((item, i) => `
+        <a class="p-item${i === 0 ? ' active' : ''}"
+           href="${item.u}"
+           target="_blank"
+           rel="noopener noreferrer"
+           data-idx="${i}"
+           role="option"
+           aria-selected="${i === 0}"
+        >
+          <span class="p-dot"></span>
+          <span class="p-name">${item.l}</span>
+          <span class="p-cat">${item.s}</span>
+        </a>
+      `).join('');
+
+      pResults.querySelectorAll('.p-item').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          pActiveIdx = +el.dataset.idx;
+          updateActive();
+        });
+      });
+    }
+
+    function updateActive() {
+      pResults.querySelectorAll('.p-item').forEach((el, i) => {
+        el.classList.toggle('active', i === pActiveIdx);
+        el.setAttribute('aria-selected', i === pActiveIdx ? 'true' : 'false');
+        if (i === pActiveIdx) el.scrollIntoView({ block: 'nearest' });
+      });
+    }
+
+    palInput.addEventListener('input', () => {
+      pActiveIdx = 0;
+      renderPalette(palInput.value.trim().toLowerCase());
+    });
+
+    palInput.addEventListener('keydown', e => {
+      const items = pResults.querySelectorAll('.p-item');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        pActiveIdx = Math.min(pActiveIdx + 1, items.length - 1);
+        updateActive();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        pActiveIdx = Math.max(pActiveIdx - 1, 0);
+        updateActive();
+      } else if (e.key === 'Enter') {
+        if (items[pActiveIdx]) {
+          items[pActiveIdx].click();
+          closePalette();
+        }
+      } else if (e.key === 'Escape') {
+        closePalette();
+      }
+    });
+
+    document.getElementById('openPalette').addEventListener('click', openPalette);
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) closePalette();
+    });
+
+    document.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        palOpen ? closePalette() : openPalette();
+      }
+      if (e.key === 'Escape' && palOpen) closePalette();
+    });
+  </script>
+</body>
+</html>
